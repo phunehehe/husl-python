@@ -1,11 +1,13 @@
 [![Build Status](https://travis-ci.org/husl-colors/husl-python.svg?branch=master)](http://travis-ci.org/husl-colors/husl-python)
 [![Package Version](https://img.shields.io/pypi/v/husl.svg)](https://pypi.python.org/pypi/husl/)
 
-A Python implementation of [HUSL](http://www.husl-colors.org) (revision 3).
+A fork of the Python implementation of [HUSL](http://www.husl-colors.org) (revision 3).
+
+This fork uses numpy instead of math for calcution and accepts numpy arrays for the color channels.
 
 ## Installation
 
-`pip install husl`
+`pip install husl` or `python setup.py install --user`
 
 ## Usage
 
