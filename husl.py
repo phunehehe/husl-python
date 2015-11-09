@@ -368,14 +368,12 @@ def rgb_to_hex(triple):
 def xyz_to_rgb(triple):  
     XYZ = np.asarray(triple)
     RGB=[np.sum(XYZ*np.array(mi).reshape((3,)+(XYZ.ndim-1)*(1,)),0) for mi in m]
-    #ret = _from_linear(RGB)
-    ret = np.asarray(RGB)
+    ret = _from_linear(RGB)
     return list(ret)
     
 @triplescalar
 def rgb_to_xyz(triple):
-    #RGB = _to_linear(triple)
-    RGB= np.asarray(triple)
+    RGB = _to_linear(triple)
     XYZ = [np.sum(RGB*np.array(mi).reshape((3,)+(RGB.ndim-1)*(1,)),0) for mi in m_inv]
     return list(XYZ)
 
