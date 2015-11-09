@@ -109,7 +109,7 @@ def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,
         amax = 100
         amin = 0
         
-    H=np.degrees(-np.angle(z) - np.pi/2+ phstart) % 360. 
+    H=np.degrees(np.angle(z) + np.pi + phstart) % 360. 
     A = np.abs(z)
     amin = A.min() if amin is None else amin
     amax = 1.2*A.max() if amax is None else amax
