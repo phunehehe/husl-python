@@ -124,9 +124,9 @@ def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,
         XYZ = np.asarray(luv_to_xyz(lch_to_luv(huslp_to_lch([H,S,np.sqrt(A)*100]))))
         R,G,B = [np.sum(XYZ*np.array(mi).reshape((3,)+(XYZ.ndim-1)*(1,)),0) for mi in m]
     elif str(mode)=='chroma':
-        R,G,B = huslp_to_rgb(H,S, A*100 )
-    else:
         R,G,B = husl_to_rgb(H,S, A*100 )
+    else:
+        R,G,B = huslp_to_rgb(H,S, A*100 )
         
     if as_image:
         return np.uint8(np.array([R,G,B]).swapaxes(0,2) * 255)
