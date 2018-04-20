@@ -385,7 +385,6 @@ def _sc_xyz_to_rgb(triple):
 
 def _sc_rgb_to_xyz(triple):
     rgbl = list(map(_sc_to_linear, triple))
-    print rgbl
     return list(map(lambda row: _sc_dot_product(row, rgbl), m_inv))
 
 @triplescalar
