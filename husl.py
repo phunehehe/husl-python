@@ -6,7 +6,7 @@ import warnings
 __version__ = "4.0.3"
 
 # original scalar functions of husl-python are available with the
-# the '_sc_' prefix. 
+# the '_sc_' prefix.
 
 m = [
     [3.240969941904521, -1.537383177570093, -0.498610760293],
@@ -31,7 +31,7 @@ def triplescalar(func):
     def inner(triple):
         # check for scalar
         was_all_scalar = np.all([np.isscalar(t) or np.asarray(t).ndim==0 for t in triple])
-        
+
         if was_all_scalar:
             # all array
             triple = [np.array(t,ndmin=1) for t in triple]
@@ -44,14 +44,14 @@ def triplescalar(func):
             # enlarge shape
             max_shape =np.array([np.asarray(t).shape for t in triple]).max(0)
             triple = [np.resize(t,max_shape) for t in triple]
-            
+
         ret = func(triple)
         if was_all_scalar:
-            return [np.float(r[0]) for r in ret]
+            return [float(r[0]) for r in ret]
         else:
             return ret
     return inner
-    
+
 # Public API
 def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,as_image=True):
     """\
@@ -59,57 +59,57 @@ def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,
     Attempts to image a complex array *z* in R, G, B coloration, where
     phase(z) is mapped to Hue and podulus(z) is mapped to a choice of
     perceived brightness.
-    
+
     Parameters
     ----------
     z : array-like
         Input should be two-dimensional. If no input is given, a colorwheel
         is produced.
-        
+
     amin : float
         All z-values with modulus below `amin` will appear black. Defaults
         to np.abs(z).min() if no value for `amin` was provided
-    
+
     amix : float
         All z-values with modulus below `amax` will appear white. Defaults
         to 0.9*np.abs(z).max() if no value for `amax` was provided
-        
+
     mode : str
-        Choose between 'special','chroma' or 'pastell'. For 'special', 
-        the individual channels will not receive gamma correction but 
+        Choose between 'special','chroma' or 'pastell'. For 'special',
+        the individual channels will not receive gamma correction but
         the luminance (Y-value) with the effect that the image will
-        preserve the modulus when watched in grayscale. For 'chroma', 
-        the chroma of the channels is distorted while preserving the 
-        lightness, with the effect, that blue and red channel become 
-        saturated. For 'pastell', lightness and chroma are preserved 
-        by changing saturation to the appropriate value, with the effect, 
+        preserve the modulus when watched in grayscale. For 'chroma',
+        the chroma of the channels is distorted while preserving the
+        lightness, with the effect, that blue and red channel become
+        saturated. For 'pastell', lightness and chroma are preserved
+        by changing saturation to the appropriate value, with the effect,
         that only pastell colors are available.
-    
+
     phstart : float
         Starting (hue) of for the phase. Choose in the range [0-2*pi].
-        
+
     sat : float
         Saturation value, defaults to 1.0 (maximum saturation when possible).
-        
+
     as_image : bool
         See return
-        
+
     Returns
     -------
     rgb : ndarray
-        If `as-images` is True, returns 8bit array (m,n,3) where last 
+        If `as-images` is True, returns 8bit array (m,n,3) where last
         axis is RGB color.
         If `as-images` is False, returns all three channels concatenated,
         RGB (3,m,n), as float values in the range [0,1.].
-        
+
     """
     if z is None:
         x,y=np.indices((200,200))-99.5
         z=x+1j*y
         amax = 100
         amin = 0
-        
-    H=np.degrees(np.angle(z) + np.pi + phstart) % 360. 
+
+    H=np.degrees(np.angle(z) + np.pi + phstart) % 360.
     A = np.abs(z)
     amin = A.min() if amin is None else amin
     amax = 1.2*A.max() if amax is None else amax
@@ -117,7 +117,7 @@ def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,
         amin = 0
     if np.allclose(0,amax):
         amix = 1
-        
+
     A=(A-amin)/(amax-amin)
     S= sat * 100
     if str(mode)=='special':
@@ -127,12 +127,12 @@ def complex_to_rgb(z=None,amin=None,amax=None,mode='special',phstart=0.,sat=1.0,
         R,G,B = husl_to_rgb(H,S, A*100 )
     else:
         R,G,B = huslp_to_rgb(H,S, A*100 )
-        
+
     if as_image:
         return np.uint8(np.array([R,G,B]).swapaxes(0,2) * 255)
     else:
         return np.array([R,G,B])
-    
+
 def husl_to_rgb(h, s, l):
     return lch_to_rgb(*husl_to_lch([h, s, l]))
 
@@ -222,7 +222,7 @@ def _sc_max_chroma_for_LH(L, H):
 def _get_bounds(L):
     sub1 = ((L + 16.0) ** 3.0) / 1560896.0
     sub2 = np.array(L) / kappa
-    sub2[sub1 > epsilon] = sub1[sub1 > epsilon] 
+    sub2[sub1 > epsilon] = sub1[sub1 > epsilon]
     ret = []
     for [m1, m2, m3] in m:
         for t in [0, 1]:
@@ -272,10 +272,10 @@ def _sc_dot_product(a, b):
     return sum(map(operator.mul, a, b))
 
 def _f(t):
-    ret = np.array(t) / refY * kappa 
+    ret = np.array(t) / refY * kappa
     ret[t > epsilon] =116 * np.power((t[t > epsilon] / refY), 1.0 / 3.0) - 16.0
-    return ret  
-    
+    return ret
+
 
 def _sc_f(t):
     if t > epsilon:
@@ -316,7 +316,7 @@ def _to_linear(c):
     c2= np.array(c)
     ret = np.array(c) / 12.92
     ret[c2 > 0.04045] = np.power((c2[c2 > 0.04045] + a) / (1.0 + a), 2.4)
-    return ret  
+    return ret
 
 def _sc_to_linear(c):
     a = 0.055
@@ -365,12 +365,12 @@ def rgb_to_hex(triple):
     return '#%02x%02x%02x' % tuple(_sc_rgb_prepare([r, g, b]))
 
 @triplescalar
-def xyz_to_rgb(triple):  
+def xyz_to_rgb(triple):
     XYZ = np.asarray(triple)
     RGB=[np.sum(XYZ*np.array(mi).reshape((3,)+(XYZ.ndim-1)*(1,)),0) for mi in m]
     ret = _from_linear(RGB)
     return list(ret)
-    
+
 @triplescalar
 def rgb_to_xyz(triple):
     RGB = _to_linear(triple)
@@ -378,7 +378,7 @@ def rgb_to_xyz(triple):
     return list(XYZ)
 
 
-def _sc_xyz_to_rgb(triple):  
+def _sc_xyz_to_rgb(triple):
     xyz = map(lambda row: _sc_dot_product(row, triple), m)
     return list(map(_sc_from_linear, xyz))
 
@@ -392,7 +392,7 @@ def xyz_to_luv(triple):
     X, Y, Z = triple
 
     mask1 = (X != 0.0) & (X != 0.0) & (Z != 0.0)
-    
+
     with warnings.catch_warnings():
         warnings.simplefilter("ignore",RuntimeWarning)
         varU = (4.0 * X) / (X + (15.0 * Y) + (3.0 * Z))
@@ -434,7 +434,7 @@ def luv_to_xyz(triple):
 
     mask = (L == 0)
     # copy
-    L2 = np.array(L).astype(np.float)
+    L2 = np.array(L).astype(float)
     L2[mask]=np.nan
 
     with warnings.catch_warnings():
@@ -445,7 +445,7 @@ def luv_to_xyz(triple):
         Y = varY * refY
         X = 0.0 - (9.0 * Y * varU) / ((varU - 4.0) * varV - varU * varV)
         Z = (9.0 * Y - (15.0 * varV * Y) - (varV * X)) / (3.0 * varV)
-    
+
     X[mask]=0.
     Y[mask]=0.
     Z[mask]=0.
@@ -486,7 +486,7 @@ def lch_to_luv(triple):
     V = np.sin(Hrad) * C
 
     return [L, U, V]
-    
+
 
 def _sc_luv_to_lch(triple):
     L, U, V = triple
@@ -520,7 +520,7 @@ def husl_to_lch(triple):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore",RuntimeWarning)
         C = _max_chroma_for_LH(L, H)/ 100.0 * S
-    
+
     C[M1 | M2]=0.
 
     return [L, C, H]
@@ -539,7 +539,7 @@ def lch_to_husl(triple):
     S[M1 | M2]=0.
 
     return [H, S, L]
-    
+
 
 def _sc_husl_to_lch(triple):
     H, S, L = triple
@@ -594,9 +594,9 @@ def lch_to_huslp(triple):
         warnings.simplefilter("ignore",RuntimeWarning)
         S = C / _max_safe_chroma_for_L(L) * 100.0
     S[M1 | M2] = 0.
-    
+
     return [H, S, L]
-    
+
 
 def _sc_huslp_to_lch(triple):
     H, S, L = triple
